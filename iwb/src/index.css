@@ -1,0 +1,110 @@
+/* General Page Styling */
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f8f1e9, #e3cbb8);
+  color: #333;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+/* Navigation Bar */
+.navbar {
+  background: #5a3e2b;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar a:hover {
+  color: #e0a96d;
+}
+
+/* Moving Heading */
+@keyframes moveHeading {
+  0% { transform: translateX(-100px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.moving-heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #5a3e2b;
+  animation: moveHeading 1s ease-in-out;
+  margin-top: 20px;
+}
+
+/* Stylish Buttons */
+.button {
+  background: #e0a96d;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s;
+}
+
+.button:hover {
+  background: #5a3e2b;
+  transform: scale(1.05);
+}
+
+/* Input Fields */
+.input-field {
+  width: 80%;
+  max-width: 300px;
+  padding: 10px;
+  border: 2px solid #e0a96d;
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.input-field:focus {
+  border-color: #5a3e2b;
+}
+
+/* Container for forms */
+.form-container {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+/* Text Styles */
+.text-primary {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #5a3e2b;
+}
+
+.text-secondary {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .moving-heading {
+    font-size: 2rem;
+  }
+
+  .input-field {
+    width: 100%;
+  }
+}

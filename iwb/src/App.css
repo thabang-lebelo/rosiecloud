@@ -1,0 +1,216 @@
+/* App.css */
+
+/* General styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  color: #333; /* Dark text */
+  position: relative; /* Position for pseudo-elements */
+  overflow: hidden; /* Prevent overflow */
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+      radial-gradient(circle, rgba(255, 255, 255, 0.1) 20%, transparent 20%),
+      radial-gradient(circle, rgba(255, 255, 255, 0.1) 20%, transparent 20%);
+  background-size: 10px 10px; /* Size of the gradient circles */
+  opacity: 0.1; /* Lower opacity for background effect */
+  pointer-events: none; /* Allows clicking through this layer */
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0f7fa 25%, #80deea 75%); /* Gradient background */
+}
+
+/* Decorative background */
+.decorative-background {
+  position: relative;
+  padding: 20px; /* For spacing */
+  overflow: hidden; /* To contain pseudo-elements */
+}
+
+.decorative-background:before {
+  content: "";
+  position: absolute;
+  width: 200px; /* Size of the decorative element */
+  height: 200px;
+  border-radius: 50%; /* Circle shape */
+  background: rgba(255, 255, 255, 0.3); /* Semi-transparent */
+  top: 20%; /* Positioning */
+  left: 10%;
+  z-index: 0;
+}
+
+/* Header styles */
+.app-header {
+  background-color: #00796b; /* Dark teal */
+  padding: 15px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+.app-navbar {
+  display: flex;
+  gap: 15px;
+}
+
+/* Universal Button styles */
+button,
+.nav-button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  background-color: #ffffff; /* White background */
+  color: #00796b; /* Dark teal text */
+  padding: 1px 2px; /* Slightly increased padding */
+  border: 2px solid #00796b; /* Match border with button */
+  border-radius: 15px; /* Pill shape */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; /* Smooth transition */
+  font-weight: bold;
+  text-align: center; /* Centering text */
+}
+
+button:hover,
+.nav-button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover {
+  background-color: #d7fff5; /* Light teal */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+  transform: translateY(-3px); /* Slight uplift */
+}
+
+button:active,
+.nav-button:active,
+input[type="submit"]:active,
+input[type="reset"]:active,
+input[type="button"]:active {
+  background-color: #b2ebf2; /* Slightly darker on click */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Reduce shadow on click */
+  transform: translateY(1px); /* Move down slightly */
+}
+
+/* Main section styles */
+.app-main {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* User role display */
+.user-role {
+  margin-top: 20px;
+  font-size: 1.5em; /* Increased font size */
+  font-weight: bold;
+  color: #005f47; /* Darker teal for visibility */
+}
+
+/* Input field styling */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: 3px; /* Increased padding for comfort */
+  margin-top: 3px;
+  margin-bottom: 10px;
+  border: 2px solid #00796b; /* Dark teal */
+  border-radius: 5px;
+  transition: border-color 0.3s, box-shadow 0.3s; /* Added box-shadow */
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #004d40; /* Darker teal on focus */
+  box-shadow: 0 0 3px rgba(0, 121, 107, 0.5); /* Glow effect */
+  outline: none; /* Remove default outline */
+}
+
+/* Card styles */
+.card {
+  background-color: white; /* White background */
+  box-shadow: 0 4px 110px rgba(0, 0, 0, 0.1);
+  border-radius: 10px; /* More rounded corners */
+  padding: 20px;
+  width: 300px; /* Fixed width for cards */
+  margin: 10px;
+  transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition */
+  text-align: center; /* Center align text within card */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Lift on hover */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+}
+
+.card-title {
+  font-size: 1.6em; /* Increase title size */
+  margin-bottom: 10px;
+  color: #00796b; /* Dark teal */
+}
+
+.card-description {
+  font-size: 1em;
+  color: #666; /* Medium gray */
+}
+
+/* Image styles in product cards */
+.product-image {
+  max-width: 100%; /* Responsive width */
+  height: auto; /* Maintain aspect ratio */
+  max-height: 150px; /* Limit height for uniformity */
+  margin-bottom: 10px; /* Space between image and text */
+}
+
+/* Adjust specifications display */
+.product-specifications {
+  font-size: 0.9em; /* Slightly smaller for spec details */
+  color: #888; /* Light gray for visibility */
+  list-style-type: none; /* Remove list styles */
+  padding: 0; /* Remove padding */
+}
+
+.product-specifications li {
+  text-align: left; /* Align spec text to the left */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .nav-button {
+    flex: 1;
+    text-align: center;
+    margin-bottom: 5px;
+  }
+  
+  .card {
+    width: 90%; /* Make cards take more width on smaller screens */
+  }
+
+  .product-image {
+    max-height: 50px; /* Reduce image height on smaller screens */
+  }
+}
