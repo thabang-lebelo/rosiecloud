@@ -1,7 +1,29 @@
 {
   "dependencies": {
     "chart.js": "^4.4.8",
+    "react": "^19.1.0",
     "react-chartjs-2": "^5.3.0",
-    "react-router-dom": "^7.5.0"
-  }
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.5.0",
+    "react-scripts": "^5.0.1"
+  },
+  "name": "cloud-group-assignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThatoMphasane/iwbcloud.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ThatoMphasane/iwbcloud/issues"
+  },
+  "homepage": "https://github.com/ThatoMphasane/iwbcloud#readme"
 }

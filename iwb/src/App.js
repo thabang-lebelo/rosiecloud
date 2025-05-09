@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import './App.css'; // Import the CSS file
+//import './App.css'; // Import the CSS file
 import RegisterPage from "./RegisterPage";
 import LoginPage from "./LoginPage";
 import HomePage from "./HomePage";
@@ -31,22 +31,29 @@ const App = () => {
   const [salesRecords, setSalesRecords] = useState([]);
   const [queries, setQueries] = useState([]);
 
+  // Handle user login and redirect to the appropriate dashboard based on role
   const handleLogin = (role) => {
     setIsLoggedIn(true);
     setUserRole(role);
-    if (role === "admin") {
-      setCurrentPage("AdminDashboard");
-    } else if (role === "sales") {
-      setCurrentPage("salesDashboard");
-    } else if (role === "finance") {
-      setCurrentPage("financeDashboard");
-    } else if (role === "customer") {
-      setCurrentPage("CustomerDashboard");
-    } else {
-      setCurrentPage("home");
+    switch (role) {
+      case "admin":
+        setCurrentPage("AdminDashboard");
+        break;
+      case "sales":
+        setCurrentPage("salesDashboard");
+        break;
+      case "finance":
+        setCurrentPage("financeDashboard");
+        break;
+      case "customer":
+        setCurrentPage("CustomerDashboard");
+        break;
+      default:
+        setCurrentPage("home");
     }
   };
 
+  // Handle logout and reset all states
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserRole(null);
@@ -55,6 +62,7 @@ const App = () => {
     alert("You have logged out successfully.");
   };
 
+  // Register a new user
   const registerUser = async (newUser) => {
     try {
       const response = await fetch("http://localhost:5000/register", {
@@ -78,10 +86,12 @@ const App = () => {
     }
   };
 
+  // Check user credentials and log in
   const checkUserCredentials = (email, password, role) => {
     handleLogin(role); // Call handleLogin to set userRole and navigate accordingly
   };
 
+  // Navigate to a specific page
   const navigateTo = (page, product = null) => {
     if (page === "productDetail" && product) {
       setSelectedProduct(product);
@@ -89,6 +99,7 @@ const App = () => {
     setCurrentPage(page);
   };
 
+  // Add item to cart
   const addToCart = (product, quantity = 1) => {
     const existingProduct = cartItems.find((item) => item.id === product.id);
     if (existingProduct) {
@@ -104,10 +115,12 @@ const App = () => {
     }
   };
 
+  // Remove item from cart
   const removeFromCart = (id) => {
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
+  // Update cart item quantity
   const updateCartItemQuantity = (id, quantity) => {
     if (quantity < 1) return;
     setCartItems(
@@ -117,6 +130,7 @@ const App = () => {
     );
   };
 
+  // Place an order
   const handleOrderPlacement = (buyerInfo) => {
     console.log("Order placed for:", buyerInfo);
     setCartItems([]); // Clear the cart after placing the order
@@ -124,12 +138,14 @@ const App = () => {
     setCurrentPage("home");
   };
 
+  // Submit a client query
   const submitQuery = (newQuery) => {
     const queryWithId = { ...newQuery, id: Date.now(), status: "pending" };
     setQueries([...queries, queryWithId]);
     alert("Your query has been submitted successfully.");
   };
 
+  // Mark a query as complete
   const markQueryAsComplete = (id) => {
     const updatedQueries = queries.map((query) =>
       query.id === id ? { ...query, status: "complete" } : query
@@ -137,6 +153,7 @@ const App = () => {
     setQueries(updatedQueries);
   };
 
+  // Navigate back to home
   const handleBack = () => {
     setCurrentPage("home"); // Navigate back to home
   };
@@ -149,8 +166,7 @@ const App = () => {
           {/* Show only Register and Login buttons for non-logged-in users */}
           {!isLoggedIn ? (
             <>
-              <button className="nav-button" onClick={() => setCurrentPage("register")}>Register</button>
-              <button className="nav-button" onClick={() => setCurrentPage("login")}>Login</button>
+             
             </>
           ) : (
             <button className="nav-button" onClick={handleLogout}>Logout</button>
@@ -158,6 +174,7 @@ const App = () => {
         </nav>
       </header>
       <main className="app-main">
+        {/* Page Content */}
         {currentPage === "home" && <HomePage navigateTo={navigateTo} />}
         {currentPage === "register" && (
           <RegisterPage

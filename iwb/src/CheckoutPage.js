@@ -1,4 +1,3 @@
-// CheckoutPage.js
 import React, { useState, useEffect } from "react";
 
 // Input Field component used in the form
@@ -68,12 +67,9 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
     }
   };
 
-  // Format currency
+  // Format currency: change from USD to M
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+    return `M${amount.toFixed(2)}`;
   };
 
   // Load cart items and buyer information when component mounts
@@ -118,98 +114,77 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
     return re.test(email);
   };
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-    setError(null); // Clear previous errors
-
-    // Validate form inputs
-    if (!buyerInfo.name || !buyerInfo.email || !buyerInfo.address || !buyerInfo.paymentInfo) {
-      setError("Please fill out all required fields.");
-      return;
-    }
-    if (!isValidEmail(buyerInfo.email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    // Note: We don't check cartItems.length here before submitting
-    // because the backend will do that check based on the database cart.
-    // However, the submit button is disabled if cartItems.length is 0
-    // based on the localStorage state, which is good UX.
-
-
-    setLoading(true); // Start loading state
-
+  // Sync cart with backend before checkout
+  const syncCartWithBackend = async () => {
     try {
-      // *** KEY CHANGE: Only send customerName as required by backend ***
+      await api.post("/api/cart/sync", {
+        userId: userId,
+        cartItems: cartItems.map(item => ({
+          productId: item.productId || item._id,
+          quantity: item.quantity
+        }))
+      });
+      return true;
+    } catch (error) {
+      console.error("Error syncing cart:", error);
+      setError("Failed to synchronize cart with server. Please try again.");
+      return false;
+    }
+  };
+
+  // Handle form submission
+ const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    // Add validation if needed
+
+    setLoading(true);
+    try {
+      // First sync the cart
+      const syncSuccess = await syncCartWithBackend();
+      if (!syncSuccess) return;
+
+      // Then proceed with checkout
       const response = await api.post("/api/checkout", {
-        customerName: buyerInfo.name
-        // Backend fetches cart items from DB, so we don't send them here
-        // Backend calculates total price, so we don't send it here
-        // Backend doesn't use customerEmail, shippingAddress, userId, paymentInfo
-        // for the SalesRecord creation based on your provided code.
-        // If you need these stored with the sale, you'll need to modify the backend.
+        customerName: buyerInfo.name,
+        userId: userId,
       });
 
-      console.log("Order placed successfully:", response);
-      setOrderStatus('success'); // Set order status to success
-
-      // Clear local cart data and buyer info after successful order
-      // This matches the backend clearing the server-side cart.
-      // We clear the "checkout" specific localStorage items here.
-      localStorage.removeItem('checkoutCartItems');
-      localStorage.removeItem('checkoutTotal');
-      localStorage.removeItem('checkoutUserId');
-      // localStorage.removeItem('customerName'); // Assuming customerName might be stored separately too - remove if buyerInfo is the source
-      localStorage.removeItem('buyerInfo'); // Clear saved buyer info from localStorage
-
-      // Optionally clear state after successful checkout for UI update
-      setCartItems([]);
-      setTotalAmount(0);
-      setBuyerInfo({ name: '', email: '', address: '', paymentInfo: '' });
-
-       // Clear the main cart storage as well, since the order is placed
-       // This assumes the backend successfully processed the order and cleared the server-side cart.
-       // If the backend doesn't manage the cart, you might need to clear the 'cart' localStorage item here too.
-       // localStorage.removeItem('cart'); // <-- Uncomment this if your backend clears the cart on checkout
-
-    } catch (error) {
-      console.error("Error placing order:", error);
-      setOrderStatus('error'); // Set order status to error
-      setError(error.message || "Failed to process your order. Please try again.");
+      // Assume success if no error thrown
+      setOrderStatus('success');
+    } catch (err) {
+      setError(err.message || "An error occurred during checkout.");
+      setOrderStatus('error');
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
   };
 
-  // Handle returning to cart - USE PROP FUNCTION
+  // Navigation handlers
   const handleReturnToCart = () => {
-     if (onReturnToCart) {
-       onReturnToCart(); // Call the prop function
-     } else {
-        alert('Return to Cart navigation not configured.'); // Fallback alert
-     }
+    if (onReturnToCart) {
+      onReturnToCart();
+    } else {
+      alert('Return to Cart navigation not configured.');
+    }
   };
 
-  // Handle continue shopping - USE PROP FUNCTION
   const handleContinueShopping = () => {
-     if (onContinueShopping) {
-       onContinueShopping(); // Call the prop function
-     } else {
-       alert('Continue Shopping navigation not configured.'); // Fallback alert
-     }
+    if (onContinueShopping) {
+      onContinueShopping();
+    } else {
+      alert('Continue Shopping navigation not configured.');
+    }
   };
 
   return (
     <div className="checkout-container">
       <h2>Checkout</h2>
       <div className="back-to-cart">
-        {/* Use the prop function for navigation */}
         <button onClick={handleReturnToCart} className="back-button">
           ← Back to Cart
         </button>
       </div>
-      {/* Only show total before successful order */}
       {orderStatus !== 'success' && <h4>Order Total: {formatCurrency(totalAmount)}</h4>}
 
       {error && <div className="error-message">{error}</div>}
@@ -218,32 +193,25 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
         <div className="success-message">
           <h3>🎉 Thank you for your order!</h3>
           <p>Your order has been placed successfully.</p>
-          {/* Display order summary on success using the state loaded from localStorage */}
-          {/* Ensure cartItems state is not empty before displaying summary */}
           {cartItems.length > 0 && (
             <>
               <h4>Order Summary</h4>
               <ul className="order-items">
-                {/* Use keys that are unique for each item in the list */}
                 {cartItems.map(item => (
-                  <li key={item._id || item.productId || item.name}> {/* Use _id, productId, or name as key */}
-                    <span className="item-name">{item.name || 'Product'}</span> {/* Use item.name if available */}
+                  <li key={item._id || item.productId || item.name}>
+                    <span className="item-name">{item.name || 'Product'}</span>
                     <span className="item-quantity">x{item.quantity}</span>
-                    {/* Use item.price which was stored in localStorage */}
                     <span className="item-price">{formatCurrency((item.price || 0) * item.quantity)}</span>
                   </li>
                 ))}
-                 <li className="order-total">
+                <li className="order-total">
                   <span>Total:</span>
-                  {/* Use the totalAmount state loaded from localStorage */}
                   <span>{formatCurrency(totalAmount)}</span>
                 </li>
               </ul>
             </>
           )}
-           {/* Display customer email if available in state */}
           {buyerInfo.email && <p>A confirmation email will be sent to {buyerInfo.email}</p>}
-          {/* Use the prop function for navigation */}
           <button onClick={handleContinueShopping} className="continue-shopping">
             Continue Shopping
           </button>
@@ -252,13 +220,11 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
         <div className="error-container">
           <h3>⚠️ Order Processing Error</h3>
           <p>{error || "There was an error processing your order. Please try again later."}</p>
-          {/* Clear the error status to allow retrying */}
-          <button onClick={() => setOrderStatus(null)} className="retry-button">
+          <button onClick={() => { setOrderStatus(null); setError(null); }} className="retry-button">
             Try Again
           </button>
         </div>
       ) : (
-        // Show the form only if order hasn't been processed
         <form onSubmit={handleSubmit} className="checkout-form">
           <div className="form-section">
             <h3>Customer Information</h3>
@@ -291,7 +257,6 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
 
           <div className="form-section">
             <h3>Payment Information</h3>
-            {/* WARNING: This is a placeholder. Handle payment info securely in a real app. */}
             <InputField
               label="Credit Card Details"
               name="paymentInfo"
@@ -304,21 +269,17 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
 
           <div className="order-summary">
             <h3>Order Summary</h3>
-            {/* Display summary from the state loaded from localStorage */}
             {cartItems.length > 0 ? (
               <ul className="order-items">
-                 {/* Use keys that are unique for each item in the list */}
                 {cartItems.map(item => (
-                  <li key={item._id || item.productId || item.name}> {/* Use _id, productId, or name as key */}
-                    <span className="item-name">{item.name || 'Product'}</span> {/* Use item.name if available */}
+                  <li key={item._id || item.productId || item.name}>
+                    <span className="item-name">{item.name || 'Product'}</span>
                     <span className="item-quantity">x{item.quantity}</span>
-                     {/* Use item.price which was stored in localStorage */}
                     <span className="item-price">{formatCurrency((item.price || 0) * item.quantity)}</span>
                   </li>
                 ))}
                 <li className="order-total">
                   <span>Total:</span>
-                   {/* Use the totalAmount state loaded from localStorage */}
                   <span>{formatCurrency(totalAmount)}</span>
                 </li>
               </ul>
@@ -330,14 +291,14 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
           <button
             type="submit"
             className="submit-button"
-            disabled={loading || cartItems.length === 0} // Disable if loading or local cart is empty
+            disabled={loading || cartItems.length === 0}
           >
             {loading ? "Processing Order..." : "Place Order"}
           </button>
         </form>
       )}
 
-      {/* Moved style block inside the component */}
+      {/* Style block remains the same */}
       <style jsx>{`
         .checkout-container {
           max-width: 800px;
@@ -396,7 +357,7 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
         }
 
         .success-message ul {
-          padding-left: 20px; /* Add padding for list items */
+          padding-left: 20px;
         }
 
         .continue-shopping {
@@ -567,28 +528,15 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
           .checkout-container {
             padding: 15px;
           }
-
           .form-section,
           .order-summary {
             padding: 15px;
           }
-
           .input-field {
             padding: 8px;
           }
-
           .submit-button {
             padding: 10px 15px;
-          }
-
-          .item-quantity {
-            /* Hide quantity on small screens if desired */
-            /* display: none; */
-          }
-
-          .item-name {
-            /* Adjust flex based on whether quantity is shown */
-            /* flex: 1; */
           }
         }
       `}</style>
@@ -596,5 +544,4 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
   );
 };
 
-// Export the component directly
 export default CheckoutPage;
