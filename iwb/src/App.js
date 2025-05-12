@@ -16,6 +16,7 @@ import AutomatedResponseInterface from "./AutomatedResponseInterface";
 
 // Function to format currency
 export const formatCurrency = (amount) => {
+  
   return amount === undefined || amount === null || isNaN(amount)
     ? "M0.00"
     : `M${amount.toFixed(2)}`;
