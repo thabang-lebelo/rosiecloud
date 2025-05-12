@@ -7,7 +7,7 @@ import { AlertCircle, Check, Download, Edit, Trash2, DollarSign, Calendar, Activ
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://rosiecloud.onrender.com';
 
 const FinanceDashboard = ({ currentUser }) => {
   const [incomeData, setIncomeData] = useState([]);
