@@ -32,6 +32,8 @@ ChartJS.register(
 );
 
 const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
+  const BASE_URL = 'https://rosiecloud.onrender.com';
+
   // State variables
   const [salesRecords, setSalesRecords] = useState([]);
   const [products, setProductsState] = useState([]);
@@ -58,13 +60,13 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
     success: '#10B981',
     warning: '#F59E0B',
     danger: '#EF4444',
-    dark: '#000000',      // Changed to black
+    dark: '#000000',
     light: '#F9FAFB',
-    muted: '#000000',     // Changed to black
+    muted: '#000000',
     background: '#F3F4F6',
     cardBg: '#FFFFFF',
     border: '#E5E7EB',
-    text: '#000000',      // Added for clarity
+    text: '#000000',
     lightText: '#000000',
   };
 
@@ -73,9 +75,9 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
     const loadData = async () => {
       try {
         const [salesRes, productsRes, queriesRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/sales'),
-          axios.get('http://localhost:5000/api/products'),
-          axios.get('http://localhost:5000/api/queries'),
+          axios.get(BASE_URL),
+          axios.get(BASE_URL),
+          axios.get(BASE_URL),
         ]);
         setSalesRecords(salesRes.data);
         setProductsState(productsRes.data);
@@ -173,7 +175,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
       if (editingIndex !== null) {
         const recordToUpdate = salesRecords[editingIndex];
         const id = recordToUpdate._id;
-        const res = await axios.put(`http://localhost:5000/api/sales/${id}`, {
+        const res = await axios.put(`${BASE_URL}/api/sales/${id}`, {
           date,
           items: itemsArray,
           Price: numericPrice,
@@ -185,7 +187,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
         setSalesRecords(newRecords);
         alert('Record updated!');
       } else {
-        const res = await axios.post('http://localhost:5000/api/sales', {
+        const res = await axios.post(`${BASE_URL}`, {
           date,
           items: itemsArray,
           Price: numericPrice,
@@ -205,7 +207,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
   const deleteRecord = async (id) => {
     if (!window.confirm('Are you sure you want to delete this record?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/sales/${id}`);
+      await axios.delete(`${BASE_URL}/api/sales/${id}`);
       setSalesRecords(salesRecords.filter(r => r._id !== id));
       alert('Deleted!');
     } catch (err) {
@@ -239,7 +241,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
         if (editingProductIndex !== null) {
           const productToUpdate = products[editingProductIndex];
           const id = productToUpdate._id;
-          const res = await axios.put(`http://localhost:5000/api/products/${id}`, {
+          const res = await axios.put(`${BASE_URL}/api/products/${id}`, {
             name,
             description,
             price: numericPrice,
@@ -252,7 +254,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
           if (typeof setProducts === 'function') setProducts(newProds);
           alert('Product updated!');
         } else {
-          const res = await axios.post('http://localhost:5000/api/products', {
+          const res = await axios.post(`${BASE_URL}/api/products`, {
             name,
             description,
             price: numericPrice,
@@ -276,7 +278,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
   const deleteProduct = async (id) => {
     if (!window.confirm('Delete product?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`);
+      await axios.delete(`${BASE_URL}/api/products/${id}`);
       const newProds = products.filter(p => p._id !== id);
       setProductsState(newProds);
       if (typeof setProducts === 'function') setProducts(newProds);
@@ -331,7 +333,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
   const refreshQueries = async () => {
     try {
       setQueriesLoading(true);
-      const res = await axios.get('http://localhost:5000/api/queries');
+      const res = await axios.get(`${BASE_URL}/api/queries`);
       if (typeof setQueries === 'function') setQueries(res.data);
       setQueriesLoading(false);
     } catch (err) {
@@ -406,7 +408,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
     };
   };
 
-  // Chart options (set title and axis labels to black by referencing colors.dark)
+  // Chart options
   const queryChartOptions = {
     responsive: true,
     plugins: {
@@ -459,7 +461,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
   const handleDeleteQuery = async (queryId) => {
     if (!window.confirm('Are you sure you want to delete this query?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/queries/${queryId}`);
+      await axios.delete(`${BASE_URL}/api/queries/${queryId}`);
       if (typeof setQueries === 'function') {
         setQueries(prev => prev.filter(q => q._id !== queryId));
       }
@@ -473,7 +475,7 @@ const SalesDashboard = ({ queries, setQueries, handleBack, setProducts }) => {
     const reply = prompt('Enter your response:', query.response || '');
     if (reply !== null && reply.trim() !== '') {
       axios
-        .put(`http://localhost:5000/api/queries/${query._id}`, {
+        .put(`${BASE_URL}/api/queries/${query._id}`, {
           ...query,
           response: reply,
           status: 'Responded',
