@@ -41,7 +41,7 @@ const CheckoutPage = ({ onReturnToCart, onContinueShopping }) => {
   const [error, setError] = useState(null); // Error message state
 
   // API configuration
-  const API_BASE_URL = 'http://localhost:5000';
+  const API_BASE_URL = 'https://rosiecloud.onrender.com';
 
   // Simple API wrapper for consistency
   const api = {
