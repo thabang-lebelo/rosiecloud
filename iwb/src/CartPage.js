@@ -6,7 +6,7 @@ const CartPage = ({ cartItems, removeFromCart, updateCartItemQuantity, proceedTo
   const [orderStatus, setOrderStatus] = useState({ message: '', isError: false });
 
   const TAX_RATE = 0.1; // 10% tax
-  const API_BASE_URL = 'http://localhost:5000';
+  const API_BASE_URL = 'https://rosiecloud.onrender.com';
 
   // Custom fetch wrapper for product details
   const api = {
