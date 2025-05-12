@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const UserManagement = () => {
+  const BASE_URL = 'https://rosiecloud.onrender.com';
+
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: '' });
   const [editUser, setEditUser] = useState(null);
@@ -10,7 +12,7 @@ const UserManagement = () => {
   useEffect(() => {
     const loadUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/users');
+        const response = await axios.get(`${BASE_URL}/api/users`);
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users", error);
@@ -24,14 +26,14 @@ const UserManagement = () => {
   const saveUser = async (user) => {
     try {
       if (editUser) {
-        const response = await axios.put(`http://localhost:5000/api/users/${editUser._id}`, user);
+        const response = await axios.put(`${BASE_URL}/api/users/${editUser._id}`, user);
         const updatedUser = response.data;
         setUsers((prevUsers) =>
           prevUsers.map((u) => (u._id === updatedUser._id ? updatedUser : u))
         );
         setEditUser(null);
       } else {
-        const response = await axios.post('http://localhost:5000/api/users', user);
+        const response = await axios.post(`${BASE_URL}/api/users`, user);
         setUsers((prevUsers) => [...prevUsers, response.data]);
       }
       setNewUser({ name: '', email: '', password: '', role: '' });
@@ -43,7 +45,7 @@ const UserManagement = () => {
 
   const handleDeleteUser = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/users/${id}`);
+      await axios.delete(`${BASE_URL}/api/users/${id}`);
       setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
     } catch (error) {
       console.error("Error deleting user:", error);
