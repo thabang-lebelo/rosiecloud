@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from 'axios'; // <-- Add this line
 import { saveAs } from 'file-saver';
 
 const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) => {
+  const BASE_URL = 'https://rosiecloud.onrender.com';
+
   const [predefinedResponses, setPredefinedResponses] = useState([]);
   const [newResponse, setNewResponse] = useState({ keywords: '', responseText: '', isDefault: false });
   const [editResponseId, setEditResponseId] = useState(null);
@@ -14,11 +16,11 @@ const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) 
   const [backupLoading, setBackupLoading] = useState(false);
   const [backupStatus, setBackupStatus] = useState('');
 
- // Fetch responses & load settings on mount
+  // Fetch responses & load settings on mount
   useEffect(() => {
     const fetchResponses = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/automated-responses');
+        const res = await axios.get(`${BASE_URL}/api/automated-responses`);
         if (Array.isArray(res.data)) setPredefinedResponses(res.data);
         else setPredefinedResponses([]);
       } catch (err) {
@@ -41,7 +43,7 @@ const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) 
   const triggerAutoResponse = async (queryId) => {
     setResponseLoading(true);
     try {
-      const res = await axios.post(`http://localhost:5000/api/queries/${queryId}/auto-respond`);
+      const res = await axios.post(`${BASE_URL}/api/queries/${queryId}/auto-respond`);
       setQueries(prev => Array.isArray(prev) ? prev.map(q => q._id === queryId ? res.data : q) : []);
       alert('Auto-response triggered successfully!');
     } catch (err) {
@@ -57,7 +59,7 @@ const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) 
     if (!window.confirm('This will automatically respond to all pending queries. Continue?')) return;
     setResponseLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/queries/auto-respond-all-pending');
+      const res = await axios.post(`${BASE_URL}/api/queries/auto-respond-all-pending`);
       if (res.data?.updatedQueries) {
         setQueries(res.data.updatedQueries);
         alert(`Auto-responded to ${res.data.processedCount || 0} queries`);
@@ -76,7 +78,7 @@ const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) 
   const handleManualResponse = async (queryId, responseText) => {
     setResponseLoading(true);
     try {
-      const res = await axios.put(`http://localhost:5000/api/queries/${queryId}`, {
+      const res = await axios.put(`${BASE_URL}/api/queries/${queryId}`, {
         status: 'resolved',
         automatedResponse: responseText,
         autoResolved: false,
@@ -104,7 +106,7 @@ const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) 
     const keywords = newResponse.keywords.split(',').map(k => k.trim()).filter(k => k);
     setResponseLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/automated-responses', {
+      const res = await axios.post(`${BASE_URL}/api/automated-responses`, {
         keywords,
         responseText: newResponse.responseText.trim(),
         isDefault: newResponse.isDefault
@@ -132,7 +134,7 @@ const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) 
     const keywords = newResponse.keywords.split(',').map(k => k.trim()).filter(k => k);
     setResponseLoading(true);
     try {
-      const res = await axios.put(`http://localhost:5000/api/automated-responses/${editResponseId}`, {
+      const res = await axios.put(`${BASE_URL}/api/automated-responses/${editResponseId}`, {
         keywords,
         responseText: newResponse.responseText.trim(),
         isDefault: newResponse.isDefault
@@ -157,7 +159,7 @@ const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) 
     if (!window.confirm('Are you sure?')) return;
     setResponseLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/automated-responses/${id}`);
+      await axios.delete(`${BASE_URL}/api/automated-responses/${id}`);
       setPredefinedResponses(prev => prev.filter(r => r._id !== id));
       if (editResponseId === id) {
         setNewResponse({ keywords: '', responseText: '', isDefault: false });
@@ -190,11 +192,11 @@ const AutomatedResponseInterface = ({ queries, setQueries, handleDeleteQuery }) 
       setBackupLoading(true);
       setBackupStatus('Backing up...');
       if (backupLocation === 'cloud') {
-        await axios.post('http://localhost:5000/api/backup', {}, { timeout: 60000 });
+        await axios.post(`${BASE_URL}/api/backup`, {}, { timeout: 60000 });
         setBackupStatus('Backup to cloud completed');
       } else {
-        const qRes = await axios.get('http://localhost:5000/api/queries');
-        const rRes = await axios.get('http://localhost:5000/api/automated-responses');
+        const qRes = await axios.get(`${BASE_URL}/api/queries`);
+        const rRes = await axios.get(`${BASE_URL}/api/automated-responses`);
         const backupContent = {
           queries: Array.isArray(qRes.data) ? qRes.data : [],
           responses: Array.isArray(rRes.data) ? rRes.data : [],
