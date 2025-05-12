@@ -13,6 +13,8 @@ import CustomerDashboard from "./CustomerDashboard";
 import CheckoutPage from "./CheckoutPage";
 import ClientQueryPage from "./ClientQueryPage";
 import AutomatedResponseInterface from "./AutomatedResponseInterface";
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://rosiecloud.onrender.com';
+
 
 // Function to format currency
 export const formatCurrency = (amount) => {
@@ -65,27 +67,27 @@ const App = () => {
 
   // Register a new user
   const registerUser = async (newUser) => {
-    try {
-      const response = await fetch("http://localhost:5000/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
+  try {
+    const response = await fetch(`${API_BASE_URL}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newUser),
+    });
 
-      if (response.ok) {
-        alert("Registration successful! Please log in using your credentials.");
-        setCurrentPage("login");
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || "Registration failed! Please check your inputs.");
-      }
-    } catch (error) {
-      alert("An error occurred during registration. Please try again.");
-      console.error("Error during registration:", error);
+    if (response.ok) {
+      alert("Registration successful! Please log in using your credentials.");
+      setCurrentPage("login");
+    } else {
+      const errorData = await response.json();
+      alert(errorData.error || "Registration failed! Please check your inputs.");
     }
-  };
+  } catch (error) {
+    alert("An error occurred during registration. Please try again.");
+    console.error("Error during registration:", error);
+  }
+};
 
   // Check user credentials and log in
   const checkUserCredentials = (email, password, role) => {
