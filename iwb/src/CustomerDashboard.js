@@ -34,7 +34,7 @@ const CustomerDashboard = ({ currentUser }) => {
     const loadData = async () => {
       // Load Products
       try {
-        const response = await axios.get('http://localhost:5000/api/products');
+        const response = await axios.get('https://rosiecloud.onrender.com');
         setProducts(response.data);
       } catch (error) {
         console.error('Failed to fetch products:', error);
