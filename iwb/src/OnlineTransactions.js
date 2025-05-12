@@ -17,7 +17,7 @@ const OnlineTransactions = ({ close }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/online-transactions', transactionDetails);
+      const response = await axios.post('https://rosiecloud.onrender.com', transactionDetails);
       alert(response.data.message || 'Transaction successful!');
       close(); // Close the widget after success
     } catch (error) {
